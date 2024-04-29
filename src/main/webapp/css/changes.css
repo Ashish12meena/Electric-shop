@@ -1,0 +1,23 @@
+.cart-icon {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 4px 0px 4px;
+	size: 3px;
+	color: rgb(255, 255, 0);
+	background-color: rgb(128, 128, 128);
+	border-radius: 12px;
+}
+
+/*********Profile ******/
+.row-form {
+	display: flex;
+}
+
+.row-form1 {
+	max-width: 150px;
+}
+
+.class-img {
+	border-radius: 50%;
+	cursor: pointer;
+	border: 2px solid rgb(192, 192, 192);
+}

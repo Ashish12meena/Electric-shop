@@ -1,0 +1,96 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ page
+	import="com.ashish.dao.*, com.ashish.service.*,com.ashish.model.*,java.util.*,jakarta.servlet.ServletOutputStream,java.io.*"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>View Product</title>
+</head>
+<body>
+	<%
+	/* Checking the user credentials */
+	String userName = (String) session.getAttribute("username");
+	String password = (String) session.getAttribute("password");
+	String userType = (String) session.getAttribute("usertype");
+
+	if (userType == null || !userType.equals("admin")) {
+
+		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
+
+	}
+
+	else if (userName == null || password == null) {
+
+		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
+
+	}
+	ProductDao prodDao = new ProductDao();
+	List<ProductModel> products = new ArrayList<ProductModel>();
+
+	String search = request.getParameter("search");
+	String type = request.getParameter("type");
+	String message = "All Products";
+	if (search != null) {
+		products = prodDao.searchAllProducts(search);
+		message = "Showing Results for '" + search + "'";
+	} else if (type != null) {
+		products = prodDao.getAllProductsByType(type);
+		message = "Showing Results for '" + type + "'";
+	} else {
+		products = prodDao.getAllProducts();
+	}
+	if (products.isEmpty()) {
+		message = "No items found for the search '" + (search != null ? search : type) + "'";
+		products = prodDao.getAllProducts();
+	}
+	%>
+	<jsp:include page="header.jsp" />
+	<div class="text-center"
+		style="color: black; font-size: 14px; font-weight: bold;"><%=message%></div>
+	<!-- Start of Product Items List -->
+	<div class="container" style="background-color: #E6F9E6;">
+		<div class="row text-center">
+
+			<%
+			for (ProductModel product : products) {
+			%>
+			<div class="col-sm-4" style='height: 350px;'>
+				<div class="thumbnail">
+					<img src="./ImageServlet?pid=<%=product.getProdId()%>" alt="Product"
+						style="height: 150px; max-width: 180px;">
+					<p class="productname"><%=product.getProdName()%>
+						(
+						<%=product.getProdId()%>
+						)
+					</p>
+					<p class="productinfo"><%=product.getProdInfo()%></p>
+					<p class="price">
+						Rs
+						<%=product.getProdPrice()%>
+					</p>
+					<form method="post">
+						<button type="submit"
+							formaction="./RemoveProductSrv?prodid=<%=product.getProdId()%>"
+							class="btn btn-danger">Remove Product</button>
+						&nbsp;&nbsp;&nbsp;
+						<button type="submit"
+							formaction="updateProduct.jsp?prodid=<%=product.getProdId()%>"
+							class="btn btn-primary">Update Product</button>
+					</form>
+				</div>
+			</div>
+
+			<%
+			}
+			%>
+
+		</div>
+	</div>
+	<!-- ENd of Product Items List -->
+
+	 <%@ include file="footer.jsp"%>
+	
+</body>
+</html>
